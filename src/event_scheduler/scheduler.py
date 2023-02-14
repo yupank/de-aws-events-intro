@@ -7,6 +7,12 @@ logger = logging.getLogger('MyLogger')
 logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
+    """ this lambda receives the invokayion event through the default EventBus
+        the EventBrindge rule is set up via AWSCLI using targets.json a following example
+        from AWS tutorial 
+        https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-run-lambda-schedule.html 
+        (examples shown in notes) 
+    """
     s3 = boto3.client('s3')
     s3_bucket_name, s3_object_name = get_object_path(event['Records'])
     logger.info('content checked')
