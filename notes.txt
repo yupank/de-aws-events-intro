@@ -1,0 +1,47 @@
+caller identity output:
+{
+    "UserId": "AIDATWLRMDXWTSORLISTI",
+    "Account": "254177713645",
+    "Arn": "arn:aws:iam::254177713645:user/Whiz_User_93331.64687981"
+}
+
+creating 3-policy output:
+{
+    "Policy": {
+        "PolicyName": "s3-read-policy-s3-file-reader",
+        "PolicyId": "ANPATWLRMDXWW63JMLU6S",
+        "Arn": "arn:aws:iam::254177713645:policy/s3-read-policy-s3-file-reader",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 0,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2023-02-01T12:37:13+00:00",
+        "UpdateDate": "2023-02-01T12:37:13+00:00"
+    }
+}
+
+creating scheduled rule:
+
+lssgav@MAC80439 ~ % aws events put-rule --name my-scheduled-rule --schedule-expression 'rate(2 minutes)'
+{
+    "RuleArn": "arn:aws:events:us-east-1:917210164066:rule/my-scheduled-rule"
+}
+lssgav@MAC80439 ~ % aws lambda add-permission --function-name s3-scheduler --statement-id my-scheduled-event --action 'lambda:InvokeFunction' --princip
+al events.amazonaws.com --source-arn arn:aws:events:us-east-1:917210164066:rule/my-scheduled-rule
+{
+    "Statement": "{\"Sid\":\"my-scheduled-event\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":\"lambda:InvokeFunction\",\"Resource\":\"arn:aws:lambda:us-east-1:619273123408:function:s3-scheduler\",\"Condition\":{\"ArnLike\":{\"AWS:SourceArn\":\"arn:aws:events:us-east-1:619273123408:rule/my-scheduled-rule\"}}}"
+}
+
+{
+"RuleArn": "arn:aws:events:us-east-1:619273123408:rule/my-scheduled-rule"
+}
+#granting permission to rule:
+aws lambda add-permission --function-name s3-scheduler --statement-id my-scheduled-event --action 'lambda:InvokeFunction' 
+--principal events.amazonaws.com --source-arn arn:aws:events:us-east-1:619273123408:rule/my-scheduled-rule
+>> output:
+{
+    "Statement": "{\"Sid\":\"my-scheduled-event\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":\"lambda:InvokeFunction\",\"Resource\":\"arn:aws:lambda:us-east-1:619273123408:function:s3-scheduler\",\"Condition\":{\"ArnLike\":{\"AWS:SourceArn\":\"arn:aws:events:us-east-1:619273123408:rule/my-scheduled-rule\"}}}"
+}
+#setting target
+aws events put-targets --rule my-scheduled-rule --targets file://../targets.json
